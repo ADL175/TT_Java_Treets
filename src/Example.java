@@ -1,37 +1,59 @@
-import java.util.Arrays;
-import java.util.Date;
+import java.util.*;
 
 import com.teamtreehouse.Treet;
 import com.teamtreehouse.Treets;
-
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class Example {
+
     public static void main(String[] args) {
-        Treet treet = new Treet(
-                "David Lim",
-                "Join us for the first annual Veterans in Tech Summit where Seattle’s top technology, corporate, education, and civic leaders will showcase the innovation and opportunities available with the region’s military presence.",
-                new Date(1504229850L)
+        Treet[] treets = Treets.load();
+        System.out.printf("There are %d treets. %n",
+                treets.length);
+
+        Set<String> allHashTags = new HashSet<>();
+        Set<String> allMentions = new TreeSet<>();
+
+        for (Treet treet : treets) {
+            allHashTags.addAll(treet.getHashTags());
+            allMentions.addAll(treet.getMentions());
+        }
+
+        System.out.printf("Hashtags: %s %n",
+                allHashTags);
+        System.out.printf("Mentions: %s %n",
+                allMentions);
+
+        Map<String, Integer> hashTagCounts = new HashMap<>();
+
+        for (Treet treet : treets) {
+            for (String hashTag : treet.getHashTags()){
+                Integer count = hashTagCounts.get(hashTag);
+                if (count == null){
+                    count = 0;
+                }
+                count++;
+                hashTagCounts.put(hashTag, count);
+            }
+        }
+        System.out.printf("Hash tag counts: %s %n", hashTagCounts);
+
+        Map<String, List<Treet>> treetsByAuthor = new HashMap<>();
+        for (Treet treet : treets){
+            List<Treet> authoredTreets = treetsByAuthor.get(treet.getAuthor());
+            if (authoredTreets == null) {
+                authoredTreets = new ArrayList<>();
+                treetsByAuthor.put(treet.getAuthor(), authoredTreets);
+            }
+            authoredTreets.add(treet);
+        }
+        System.out.printf("Treets by author: %s %n",
+                treetsByAuthor);
+        System.out.printf("Treets by nickrp: %s %n",
+                treetsByAuthor.get("nickrp")
         );
-        Treet secondTreet = new Treet(
-                "journeytocode",
-                "@Treehouse makes learning Java so fun.",
-                new Date()
-        );
-        System.out.printf("This is a new Treet: %s %n", treet);
-        System.out.println("The words are: ");
-        for (String word: treet.getWords()) {
-            System.out.println(word);
-        }
-        Treet[] treets = {treet, secondTreet };
-        Arrays.sort(treets);
-        for (Treet exampleTreet : treets) {
-            System.out.println(exampleTreet);
-        }
-        Treets.save(treets);
-        Treet[] reloadedTreets = Treets.load();
-        for (Treet reloaded : reloadedTreets) {
-            System.out.println(reloaded);
-        }
     }
+
 }

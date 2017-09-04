@@ -1,10 +1,13 @@
 package com.teamtreehouse;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
-public class Treet implements Comparable, Serializable {
-    private static final long serialVersionUID = 7532499956484949456L;
+public class Treet implements Comparable<Treet>, Serializable {
+    private static final long serialVersionUID = 7146681148113043748L;
     private boolean mBreakIt = true;
     private String mAuthor;
     private String mDescription;
@@ -25,13 +28,12 @@ public class Treet implements Comparable, Serializable {
     }
 
     @Override
-    public int compareTo(Object obj){
-        Treet other = (Treet) obj;
-        if (equals(other)){
+    public int compareTo(Treet other) {
+        if (equals(other)) {
             return 0;
         }
         int dateCmp = mCreationDate.compareTo(other.mCreationDate);
-        if (dateCmp == 0){
+        if (dateCmp == 0) {
             return mDescription.compareTo(other.mDescription);
         }
         return dateCmp;
@@ -49,7 +51,27 @@ public class Treet implements Comparable, Serializable {
         return mCreationDate;
     }
 
-    public String[] getWords() {
-        return mDescription.toLowerCase().split("[^\\w#@']+");
+    private List<String> getWords() {
+        String[] words = mDescription.toLowerCase().split("[^\\w#@']+");
+        return Arrays.asList(words);
     }
+
+    public List<String> getHashTags() {
+        return getWordsPrefixedWith("#");
+    }
+
+    public List<String> getMentions() {
+        return getWordsPrefixedWith("@");
+    }
+
+    private List<String> getWordsPrefixedWith(String prefix) {
+        List<String> results = new ArrayList<>();
+        for (String word : getWords()) {
+            if (word.startsWith(prefix)){
+                results.add(word);
+            }
+        }
+        return results;
+    }
+
 }
